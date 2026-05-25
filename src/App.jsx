@@ -1,4 +1,4 @@
-import Header from "./components/header";
+import Header from "./components/Header";
 import AppPrueva from "./components/Prueva";
 
 function App() {
