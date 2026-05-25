@@ -3,7 +3,7 @@ import React from "react";
 function Header() {
     return (
         <>
-            <p>Hola Mundo desde React</p>
+            <p className="mx-10 my-5">Demo</p>
         </>
     );
 }
