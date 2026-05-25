@@ -80,7 +80,7 @@ function AppPrueva() {
     };
 
     return (
-        <div style={{ padding: "30px" }}>
+        <div>
             <h1>Sistema Ventas Gym</h1>
 
             <select value={producto} onChange={(e) => setProducto(e.target.value)}>
