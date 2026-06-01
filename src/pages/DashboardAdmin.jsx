@@ -259,7 +259,7 @@ function DashboardAdmin() {
                         <div key={empleado.id} className="rounded-2xl border bg-white shadow-sm">
                             <h3 className="font-bold">{empleado.nombre}</h3>
                             <p>Rol: {empleado.rol}</p>
-                            <p>Sucursal: {empleado.sucursal?.nombre}</p>
+                            <p>Sucursal: {empleado.sucursales?.nombre}</p>
                             <p>Estado: {empleado.activo ? "Activo" : "Desactivado"}</p>
                             <button onClick={() => cambiarEstado(empleado)} className="mt-3 rounded-xl bg-red-500 px-4 py-2 text-white">
                                 {empleado.activo ? "Desactivar" : "Activar"}
