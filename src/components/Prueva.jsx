@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
+import { useAuth } from "../context/AuthContext";
+
 function AppPrueva() {
+    const { perfil, loading } = useAuth();
+
+    console.log("perfil", perfil);
+
     const [producto, setProducto] = useState("");
     const [cantidad, setCantidad] = useState("");
     const [precio, setPrecio] = useState("");
@@ -15,21 +21,32 @@ function AppPrueva() {
     // (HISTORIAL DE VENTAS)
 
     const cargarVentas = async () => {
-        const { data, error } = await supabase.from("ventas").select("*").order("id", { ascending: false });
+        if (!perfil) return;
+
+        let query = supabase.from("ventas").select("*").order("id", { ascending: false });
+
+        if (perfil?.rol !== "admin") {
+            query = query.eq("sucursal_id", perfil.sucursal_id);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.log(error);
             return;
         }
 
+        console.log("ventas", data);
         setVentas(data);
     };
 
     // useEffect para cargar al abrir
 
     useEffect(() => {
-        cargarVentas();
-    }, []);
+        if (!loading && perfil) {
+            cargarVentas();
+        }
+    }, [perfil, loading]);
 
     // eliminar ventas
 
@@ -60,6 +77,8 @@ function AppPrueva() {
                 precio,
                 total,
                 metodo_pago: metodoPago,
+
+                sucursal_id: perfil.sucursal_id,
             },
         ]);
 

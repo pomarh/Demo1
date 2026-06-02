@@ -5,9 +5,10 @@ import { useAuth } from "../context/AuthContext";
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import AppPrueva from "../components/Prueva";
 
 function DashboardAdmin() {
-    const { perfil, logout } = useAuth();
+    const { user, perfil, logout } = useAuth();
     const [empleados, setEmpleados] = useState([]);
 
     //estadso para crear a un usuario con rol
@@ -19,7 +20,6 @@ function DashboardAdmin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const [openModal, setOpenModal] = useState(false);
     const [editar, setEditar] = useState(null);
 
     //funcion cargar empleados
@@ -66,7 +66,7 @@ function DashboardAdmin() {
 
     // EDITAR EMPLEADO
 
-    const editarEmpleado = async () => {
+    const editarEmpleado = async (id) => {
         const { error } = await supabase.from("perfiles").update({ nombre, rol, sucursal_id: sucursalId }).eq("id", id);
 
         if (error) {
@@ -74,6 +74,7 @@ function DashboardAdmin() {
             return;
         }
 
+        setEditar(null);
         cargarEmpleados();
     };
 
@@ -95,9 +96,10 @@ function DashboardAdmin() {
 
         if (error) {
             console.log(error);
+            alert(error.message);
             return;
         }
-        alert("Correo enviado!");
+        alert("Correo de recuperacion enviado");
     };
 
     //cargamos la funcion en useEffect para mostrar en pantalla
@@ -114,89 +116,6 @@ function DashboardAdmin() {
     };
     return (
         <>
-            {openModal && editar && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-lg">
-                        <h2 className="text-xl font-bold mb-4">Editar Empleado</h2>
-
-                        {/* NOMBRE */}
-                        <input
-                            className="mb-3 w-full rounded-xl border p-3"
-                            value={editar.nombre}
-                            onChange={(e) =>
-                                setEditar({
-                                    ...editar,
-                                    nombre: e.target.value,
-                                })
-                            }
-                        />
-
-                        {/* ROL */}
-                        <select
-                            className="mb-3 w-full rounded-xl border p-3"
-                            value={editar.rol}
-                            onChange={(e) =>
-                                setEditar({
-                                    ...editar,
-                                    rol: e.target.value,
-                                })
-                            }>
-                            <option value="admin">Admin</option>
-                            <option value="cajero">Cajero</option>
-                            <option value="recepcionista">Recepcionista</option>
-                        </select>
-
-                        {/* SUCURSAL */}
-                        <select
-                            className="mb-3 w-full rounded-xl border p-3"
-                            value={editar.sucursal_id || ""}
-                            onChange={(e) =>
-                                setEditar({
-                                    ...editar,
-                                    sucursal_id: e.target.value,
-                                })
-                            }>
-                            <option value="">Seleccionar sucursal</option>
-                            {sucursales.map((s) => (
-                                <option key={s.id} value={s.id}>
-                                    {s.nombre}
-                                </option>
-                            ))}
-                        </select>
-
-                        {/* BOTONES */}
-                        <div className="flex justify-end gap-2">
-                            <button onClick={() => setOpenModal(false)} className="px-4 py-2 rounded-xl border">
-                                Cancelar
-                            </button>
-
-                            <button
-                                onClick={async () => {
-                                    const { error } = await supabase
-                                        .from("perfiles")
-                                        .update({
-                                            nombre: editar.nombre,
-                                            rol: editar.rol,
-                                            sucursal_id: editar.sucursal_id,
-                                        })
-                                        .eq("id", editar.id);
-
-                                    if (error) {
-                                        console.log(error);
-                                        return;
-                                    }
-
-                                    cargarEmpleados();
-                                    setOpenModal(false);
-                                }}
-                                className="px-4 py-2 rounded-xl bg-green-600 text-white">
-                                Guardar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             <div className="p-10">
                 <h1 className="text-4xl font-bold">Dashboard Admin</h1>
 
@@ -247,8 +166,10 @@ function DashboardAdmin() {
                         className="mb-4 w-full rounded-xl border p-3"
                     />
 
-                    <button onClick={crearEmpleado} className="w-full rounded-xl bg-emerald-500 p-4 text-white">
-                        Crear Empleado
+                    <button
+                        onClick={() => (editar ? editarEmpleado(editar) : crearEmpleado())}
+                        className="w-full rounded-xl bg-emerald-500 p-4 text-white">
+                        {editar ? "Guardar Cambios" : "Crear Empleado"}
                     </button>
                 </div>
 
@@ -261,15 +182,28 @@ function DashboardAdmin() {
                             <p>Rol: {empleado.rol}</p>
                             <p>Sucursal: {empleado.sucursales?.nombre}</p>
                             <p>Estado: {empleado.activo ? "Activo" : "Desactivado"}</p>
-                            <button onClick={() => cambiarEstado(empleado)} className="mt-3 rounded-xl bg-red-500 px-4 py-2 text-white">
-                                {empleado.activo ? "Desactivar" : "Activar"}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    (setEditar(empleado), setOpenModal(true));
-                                }}
-                                className="mt-3 rounded-xl bg-blue-500 px-4 py-2 text-white">
-                                Editar
+
+                            {user.id !== empleado.id && (
+                                <button onClick={() => cambiarEstado(empleado)} className="mt-3 rounded-xl bg-red-500 px-4 py-2 text-white">
+                                    {empleado.activo ? "Desactivar" : "Activar"}
+                                </button>
+                            )}
+
+                            {user.id !== empleado.id && (
+                                <button
+                                    onClick={() => {
+                                        setNombre(empleado.nombre);
+                                        setRol(empleado.rol);
+                                        setSucursalId(empleado.sucursal_id);
+                                        setEditar(empleado.id);
+                                    }}
+                                    className="mt-3 rounded-xl bg-blue-500 px-4 py-2 text-white">
+                                    Editar
+                                </button>
+                            )}
+
+                            <button onClick={() => resetPaswrod(empleado.email)} className="rounded-xl bg-yellow-500 px-4 py-2 text-white">
+                                Reseter contraseña
                             </button>
                         </div>
                     ))}
@@ -278,6 +212,8 @@ function DashboardAdmin() {
                 <button onClick={cerrerSesion} className="bg-red-500 text-white px-5 py-3 rounded-xl">
                     Cerrar Sesion
                 </button>
+
+                <AppPrueva />
             </div>
         </>
     );

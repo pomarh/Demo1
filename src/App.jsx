@@ -11,6 +11,7 @@ import DashboardCajero from "./pages/DashboardCajero";
 import DashboardRecepcion from "./pages/DashboardRecepcion";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import UpdatePassword from "./pages/UpdatePassword";
 
 function App() {
     return (
@@ -42,6 +43,8 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+
+                    <Route path="/update-password" element={<UpdatePassword />} />
                 </Routes>
             </BrowserRouter>
         </>
