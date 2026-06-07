@@ -1,14 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-//componentes, pages, context, hook,
-import Header from "./components/Header";
-import AppPrueva from "./components/Prueva";
-
+// Componentes arquitectura final
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
-import DashboardAdmin from "./pages/DashboardAdmin";
-import DashboardCajero from "./pages/DashboardCajero";
-import DashboardRecepcion from "./pages/DashboardRecepcion";
+import UsuariosPage from "./pages/UsuariosPage";
+import VentasPage from "./pages/VentasPage";
+import ComprasPage from "./pages/ComprasPage";
+import InventarioPage from "./pages/InventarioPage";
+import CajaPage from "./pages/CajaPage";
+import ReportesPage from "./pages/ReportesPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import UpdatePassword from "./pages/UpdatePassword";
@@ -20,26 +21,58 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Login />} />
                     <Route
-                        path="/admin"
+                        path="/dashboard"
                         element={
-                            <ProtectedRoute allowedRole="admin">
-                                <DashboardAdmin />
+                            <ProtectedRoute>
+                                <Dashboard />
                             </ProtectedRoute>
                         }
                     />
                     <Route
-                        path="/cajero"
+                        path="/dashboard/usuarios"
                         element={
-                            <ProtectedRoute allowedRole="cajero">
-                                <DashboardCajero />
+                            <ProtectedRoute>
+                                <UsuariosPage />
                             </ProtectedRoute>
                         }
                     />
                     <Route
-                        path="/recepcion"
+                        path="/dashboard/ventas"
                         element={
-                            <ProtectedRoute allowedRole="recepcionista">
-                                <DashboardRecepcion />
+                            <ProtectedRoute>
+                                <VentasPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/compras"
+                        element={
+                            <ProtectedRoute>
+                                <ComprasPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/inventario"
+                        element={
+                            <ProtectedRoute>
+                                <InventarioPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/caja"
+                        element={
+                            <ProtectedRoute>
+                                <CajaPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/reportes"
+                        element={
+                            <ProtectedRoute>
+                                <ReportesPage />
                             </ProtectedRoute>
                         }
                     />

@@ -12,20 +12,10 @@ function Login() {
     const { user, perfil } = useAuth();
 
     useEffect(() => {
-        if (!user || !perfil) return;
-
-        if (perfil.rol === "admin") {
-            navigate("/admin", { replace: true });
+        if (perfil) {
+            navigate("/dashboard");
         }
-
-        if (perfil.rol === "cajero") {
-            navigate("/cajero", { replace: true });
-        }
-
-        if (perfil.rol === "recepcionista") {
-            navigate("/recepcion", { replace: true });
-        }
-    }, [user, perfil, navigate]);
+    }, [perfil, navigate]);
 
     // creamos la funcion asincrona para email y pasword
     const login = async () => {
